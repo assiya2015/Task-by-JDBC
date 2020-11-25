@@ -2,77 +2,85 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+
 
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+
     public UserDaoHibernateImpl() {
 
     }
 
     @Override
     public void createUsersTable() {
-        SessionFactory factory = null;
-        try {
-            factory = new Util().getSessionFactory();
-            Session session = factory.openSession();
-            session.beginTransaction();
-            String SQL = "DROP TABLE IF EXISTS user";
-            System.out.println("Creating table in selected database...");
-            session.createQuery(SQL).executeUpdate();
-            session.getTransaction().commit();
+        String SQL = "DROP TABLE IF EXISTS user";
+        try (Session session = Util.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.createNativeQuery(SQL).executeUpdate();
             SQL = "CREATE TABLE user (id bigint not null auto_increment primary key, name varchar(45), lastName varchar(45), age TINYINT UNSIGNED)";
-            session.createQuery(SQL).executeUpdate();
-            session.getTransaction().commit();
-            System.out.println("Table successfully created...");
-        } finally {
-            if (factory != null){
-                factory.close();
-            }
+            session.createNativeQuery(SQL).executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     public void dropUsersTable() {
-        SessionFactory factory = null;
-        try {
-            factory = new Util().getSessionFactory();
-            Session session = factory.openSession();
-            session.beginTransaction();
-            System.out.println("Dropping users table...");
-            String SQL = "DROP TABLE user";
-            session.createQuery(SQL).executeUpdate();
-            session.getTransaction().commit();
-            System.out.println("Table was dropped");
-        } finally {
-            if (factory != null){
-                factory.close();
+        String SQL = " DROP user";
+        try (Session session = Util.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.createNativeQuery(SQL);
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveUser(String name, String lastName, byte age) {
+
+        Transaction transaction = null;
+        User user = new User(name, lastName, age);
+
+        try (Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(user);
+            transaction.commit();
+            System.out.println("User with name " + name + " was saved to DB");
+            System.out.println("User with name " + name + " has id = " + user.getId());
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+
             }
         }
 
     }
 
-    @Override
-    public void saveUser(String name, String lastName, byte age) {
-        String SQL = "INSERT INTO user (id, name, lastName, age) VALUES(?, ?, ?, ?)";
 
-    }
 
-    @Override
     public void removeUserById(long id) {
 
     }
 
-    @Override
     public List<User> getAllUsers() {
-        return null;
+        List<User> list;
+        try (Session session = Util.getSessionFactory().openSession()) {
+            list =session.createQuery(" FROM User", User.class).list();
+        }
+        return list;
     }
 
-    @Override
     public void cleanUsersTable() {
-
-    }
+            System.out.println("Deleting records...");
+            String HQL = "DELETE FROM User";
+        try (Session session = Util.getSessionFactory().openSession()) {
+            session.createQuery(HQL).executeUpdate();
+        }
+        }
 }

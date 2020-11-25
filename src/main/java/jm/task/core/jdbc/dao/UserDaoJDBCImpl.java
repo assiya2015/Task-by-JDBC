@@ -48,7 +48,6 @@ public class UserDaoJDBCImpl implements UserDao {
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, lastName);
             preparedStatement.setByte(3, age);
-
             preparedStatement.executeUpdate();
             System.out.println("User with name " + name + " was saved to DB");
         } catch (SQLException throwables) {
@@ -83,7 +82,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 String name = resultSet.getString(2);
                 String lastName = resultSet.getString(3);
                 byte age = resultSet.getByte(4);
-                User user = new User(id, name, lastName, age);
+                User user = new User(name, lastName, age);
                 list.add(user);
             }
         } catch (SQLException throwables) {

@@ -1,7 +1,7 @@
 package jm.task.core.jdbc.model;
 
 import javax.persistence.*;
-
+@Entity
 @Table(name = "user")
 public class User {
     @Id
@@ -12,21 +12,19 @@ public class User {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "last_name")
+    @Column(name = "lastName")
     private String lastName;
 
     @Column(name = "age")
     private Byte age;
 
     public User() {
-
     }
 
-    public User(Long id, String name, String lastName, Byte age) {
+    public User(String name, String lastName, byte age) {
         this.name = name;
         this.lastName = lastName;
         this.age = age;
-        this.id = id;
     }
 
     public Long getId() {
@@ -64,8 +62,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", age=" + age +
                 '}';
