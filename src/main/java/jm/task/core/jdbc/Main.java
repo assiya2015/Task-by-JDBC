@@ -12,17 +12,18 @@ public class Main {
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
         List<User> list;
-
-        userService.createUsersTable();
-        userService.saveUser("Amina", "Bakhtiyar", (byte) 10);
-        userService.saveUser("Alinur", "Bakhtiyaruly", (byte) 5);
-        userService.saveUser("Elnur", "Bakhtiyaruly", (byte) 1);
-        userService.saveUser("Anara", "Umbetbayeva", (byte) 59);
-        list = userService.getAllUsers();
-        for (User user : list)
-            System.out.println(user.toString());
-        userService.cleanUsersTable();
-        userService.dropUsersTable();
+        try (Session session = Util.getSessionFactory().openSession()) {
+            userService.createUsersTable();
+            userService.saveUser("Amina", "Bakhtiyar", (byte) 10);
+            userService.saveUser("Alinur", "Bakhtiyaruly", (byte) 5);
+            userService.saveUser("Elnur", "Bakhtiyaruly", (byte) 1);
+            userService.saveUser("Anara", "Umbetbayeva", (byte) 59);
+            list = userService.getAllUsers();
+            for (User user : list)
+                System.out.println(user.toString());
+            userService.cleanUsersTable();
+            userService.dropUsersTable();
+        }
     }
 
 }
